@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STOCK SCREENER Version 1.0</title>
+    <style>
+        button {
+            height: 50px;
+            width: 150px;
+            margin: 20px;
+            align-items: center;
+            cursor: pointer;
+            border: none;
+            border-radius: 30px;
+            background-color: #2c333a;
+            color: white;
+            font-size: 12px;
+        }
+        button:hover {
+            background-color: #1d1f20;
+        }
+    </style>
+</head>
+<body style="text-align: center; margin: 0 auto">
+
+<h1 style="text-align: center">WELCOME TO THE STOCK SCREENER Version 1.05</h1>
+
+<div style="display: flex; justify-content: center">Tickers Considered From API:<a href="https://eodhd.com/ "> EODHD WEBSITE </a> </div>
+<button id="Analyze_Sector" style="display:none;">Analyze_Sector</button>
+<button id="resultsButton" style="background-color: blue">Results</button>
+
+<script>
+    document.getElementById('resultsButton').addEventListener('click', function() {
+        window.location.href = '/results';  // Redirect to the Results route
+    });
+    document.getElementById('Analyze_Sector').addEventListener('click', function() {
+        window.location.href = '/Analyze_Sector';  // Redirect to the Results route
+    });
+</script>
+
+</body>
+</html>

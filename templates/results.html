@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center" style="text-align: center">Stock Analysis Results</h2>
+
+        {% if data %}
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Sector</th>
+                        <th>TradingView Link</th>
+                        <th>Days Since Breakout</th>
+                        <th>% Above 50MA</th>
+                        <th>Breakout</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                        <tr>
+                            <td>{{ row.Ticker }}</td>
+                            <td>{{ row.Sector }}</td>
+                            <td><a href="{{ row.TradingView_Link }}" target="_blank">View</a></td>
+                            <td>{{ row.Days_Since_Breakout }}</td>
+                            <td>{{ row.Pct_Above_50MA }}</td>
+                            <td>{{ row.Breakout }}</td>
+                            <td>{{ row.Score }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center">No results available.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

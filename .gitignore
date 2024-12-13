@@ -1,1 +1,4 @@
 .idea/
+stock_data/
+.venv/
+final.csv
