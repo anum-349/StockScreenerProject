@@ -2,5 +2,6 @@
 stock_data/
 .venv/
 final.csv
-.env
 venv/
+config.bat
+node_modules

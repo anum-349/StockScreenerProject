@@ -1,3 +1,4 @@
+import utils.session
 import pandas as pd
 import os
 from flask import render_template, Flask
