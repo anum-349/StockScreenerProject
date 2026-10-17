@@ -1,42 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>STOCK SCREENER Version 1.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Screener</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        button {
-            height: 50px;
-            width: 150px;
-            margin: 20px;
-            align-items: center;
-            cursor: pointer;
-            border: none;
-            border-radius: 30px;
-            background-color: #2c333a;
-            color: white;
-            font-size: 12px;
+        :root {
+            --bg: #eeecd6;
+            --surface: #f8f6e8;
+            --line: #e5aecb;
+            --text: #2b0a14;
+            --muted: #7a4a5e;
+            --accent: #d6123f;
+            --accent-ink: #ffffff;
+            --up: #d6123f;
+            --ma: #e5aecb;
         }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #000000;
+                --surface: #140404;
+                --line: #7a0000;
+                --text: #f5e9e9;
+                --muted: #c79a9a;
+                --accent: #ff0000;
+                --accent-ink: #000000;
+                --up: #ff0000;
+                --ma: #8f3a3a;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Manrope", system-ui, sans-serif;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .version {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: clamp(34px, 6vw, 58px);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.05;
+            margin: 0 0 16px;
+            max-width: 14ch;
+        }
+
+        p.lead {
+            color: var(--muted);
+            font-size: 18px;
+            max-width: 46ch;
+            margin: 0 auto 32px;
+        }
+
+        .chart {
+            width: min(640px, 100%);
+            margin: 8px auto 36px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 16px 16px 8px;
+        }
+
+        .chart svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .chart .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            font-size: 13px;
+            color: var(--muted);
+            padding: 4px 0 8px;
+        }
+
+        .chart .legend i {
+            display: inline-block;
+            width: 18px;
+            height: 3px;
+            border-radius: 2px;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            font: inherit;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            border: 0;
+            border-radius: 12px;
+            padding: 14px 32px;
+            background: var(--accent);
+            color: var(--accent-ink);
+            transition: transform .15s ease, filter .15s ease;
+        }
+
         button:hover {
-            background-color: #1d1f20;
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+
+        button:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 3px;
+        }
+
+        .source {
+            margin-top: 36px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .source a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .source a:hover {
+            text-decoration: underline;
+        }
+
+        .draw {
+            stroke-dasharray: 700;
+            stroke-dashoffset: 700;
+            animation: draw 1.6s .2s ease-out forwards;
+        }
+
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .draw {
+                animation: none;
+                stroke-dashoffset: 0;
+            }
+
+            button {
+                transition: none;
+            }
         }
     </style>
 </head>
-<body style="text-align: center; margin: 0 auto">
 
-<h1 style="text-align: center">WELCOME TO THE STOCK SCREENER Version 1.05</h1>
+<body>
 
-<div style="display: flex; justify-content: center">Tickers Considered From API:<a href="https://eodhd.com/ "> EODHD WEBSITE </a> </div>
-<button id="Analyze_Sector" style="display:none;">Analyze_Sector</button>
-<button id="resultsButton" style="background-color: blue">Results</button>
+    <div class="version">Stock Screener v1.05</div>
+    <h1>Find stocks breaking out above their 50-day average</h1>
+    <p class="lead">Every ticker is ranked by how recently it broke out and how far it sits above its 50-day moving
+        average.</p>
 
-<script>
-    document.getElementById('resultsButton').addEventListener('click', function() {
-        window.location.href = '/results';  // Redirect to the Results route
-    });
-    document.getElementById('Analyze_Sector').addEventListener('click', function() {
-        window.location.href = '/Analyze_Sector';  // Redirect to the Results route
-    });
-</script>
+    <div class="chart" role="img" aria-label="Illustration of a price line crossing above its 50-day moving average">
+        <svg viewBox="0 0 600 200">
+            <path d="M10 130 C80 125 130 140 200 120 S300 118 360 110 S450 60 590 30" fill="none" stroke="var(--ma)"
+                stroke-width="2.5" stroke-dasharray="6 6" />
+            <path class="draw" d="M10 150 C50 160 80 120 120 135 S190 160 240 130 S320 70 380 60 S480 30 590 18"
+                fill="none" stroke="var(--up)" stroke-width="3.5" stroke-linecap="round" />
+            <circle cx="300" cy="96" r="7" fill="var(--bg)" stroke="var(--up)" stroke-width="3" />
+            <text x="316" y="92" fill="var(--text)" font-size="13" font-weight="600"
+                font-family="Manrope, sans-serif">Breakout</text>
+        </svg>
+        <div class="legend"><span><i style="background:var(--up)"></i>Price</span><span><i
+                    style="background:var(--ma)"></i>50-day average</span></div>
+    </div>
 
+    <div class="actions">
+        <button id="resultsButton">View results</button>
+        <button id="Analyze_Sector" style="display:none;">Analyze sectors</button>
+    </div>
+
+    <div class="source">Tickers sourced from <a href="https://eodhd.com/" target="_blank" rel="noopener">EODHD</a></div>
+
+    <script>
+        document.getElementById('resultsButton').addEventListener('click', function () {
+            window.location.href = '/results';
+        });
+        document.getElementById('Analyze_Sector').addEventListener('click', function () {
+            window.location.href = '/Analyze_Sector';
+        });
+    </script>
 </body>
+
 </html>

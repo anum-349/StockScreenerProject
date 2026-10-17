@@ -2,3 +2,5 @@
 stock_data/
 .venv/
 final.csv
+.env
+venv/

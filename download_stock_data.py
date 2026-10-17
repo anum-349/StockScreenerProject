@@ -5,7 +5,7 @@ import datetime as dt
 import os
 
 # Replace with your API key
-api_key = '672dfdfef10c42.49990560'  # Use your actual API key here
+api_key = '6723c5e7391a90.84302604'  # Use your actual API key here
 exchange_code = 'US'  # Replace this with a valid exchange code
 base_url = f'https://eodhd.com/api/exchange-symbol-list/{exchange_code}'
 
@@ -23,10 +23,7 @@ sector = sector_tickers_df['Sector'].tolist()
 exchange = sector_tickers_df['Exchange'].tolist()
 
 # Create stock_data folder if it doesn't exist
-if os.path.exists(stock_data_path):
-    os.remove(stock_data_path)
-    print("Removed")
-os.makedirs(stock_data_path)
+os.makedirs(stock_data_path, exist_ok=True)
 
 def load_data_from_csv(ticker):
     csv_path = os.path.join(stock_data_path, f'{ticker}.csv')
@@ -43,7 +40,14 @@ end = dt.datetime.now()
 def fetch_stock_data(ticker):
     try:
         print(ticker)
-        df = yf.download(ticker, start=start, end=end)
+        df = yf.download(
+            ticker,
+            start=start,
+            end=end,
+            auto_adjust=False,
+            progress=False,
+            threads=False
+        )
         if df.empty:
             return None, None
 

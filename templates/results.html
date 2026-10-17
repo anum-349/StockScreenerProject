@@ -1,60 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Analysis Results</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #343a40;
-            color: white;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Analysis Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eeecd6; --surface: #f8f6e8; --head: #f1d4e3; --line: #e5aecb; --hover: #f8e4ee;
+    --text: #2b0a14; --muted: #7a4a5e; --accent: #d6123f;
+    --up: #3a2d00; --up-bg: #f0c92b; --flat-bg: #e3dfc0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000000; --surface: #140404; --head: #3a0000; --line: #7a0000; --hover: #2a0000;
+      --text: #f5e9e9; --muted: #c79a9a; --accent: #ff0000;
+      --up: #ffb3b3; --up-bg: #7a0000; --flat-bg: #2a0000;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: "Manrope", system-ui, sans-serif; line-height: 1.5; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+  .back { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 600; }
+  .back:hover { color: var(--accent); }
+  h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -0.03em; margin: 12px 0 24px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+  .stat b { display: block; font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .stat span { font-size: 13px; color: var(--muted); }
+  .tools { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .tools input {
+    font: inherit; padding: 11px 14px; width: min(320px, 100%); border-radius: 10px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--text);
+  }
+  .tools input:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+  .count { font-size: 14px; color: var(--muted); }
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+  table { width: 100%; border-collapse: collapse; min-width: 760px; }
+  th, td { padding: 14px 16px; text-align: left; white-space: nowrap; }
+  th { background: var(--head); font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; user-select: none; }
+  th:hover { color: var(--text); }
+  th[aria-sort="ascending"]::after { content: " ▲"; font-size: 10px; }
+  th[aria-sort="descending"]::after { content: " ▼"; font-size: 10px; }
+  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tbody tr { border-top: 1px solid var(--line); }
+  tbody tr:hover { background: var(--hover); }
+  .ticker { font-weight: 800; letter-spacing: 0.01em; }
+  .sector { color: var(--muted); }
+  a.view { color: var(--accent); font-weight: 600; text-decoration: none; }
+  a.view:hover { text-decoration: underline; }
+  .pill { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--flat-bg); color: var(--muted); }
+  .pill.yes { background: var(--up-bg); color: var(--up); }
+  .score { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+  .bar { width: 70px; height: 6px; border-radius: 3px; background: var(--flat-bg); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+  .empty { text-align: center; padding: 64px 24px; color: var(--muted); }
+  .empty b { display: block; color: var(--text); font-size: 18px; margin-bottom: 4px; }
+</style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h2 class="text-center" style="text-align: center">Stock Analysis Results</h2>
+<div class="wrap">
+  <a class="back" href="/">Back to home</a>
+  <h1>Stock analysis results</h1>
 
-        {% if data %}
-            <table class="table table-bordered table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th>Ticker</th>
-                        <th>Sector</th>
-                        <th>TradingView Link</th>
-                        <th>Days Since Breakout</th>
-                        <th>% Above 50MA</th>
-                        <th>Breakout</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in data %}
-                        <tr>
-                            <td>{{ row.Ticker }}</td>
-                            <td>{{ row.Sector }}</td>
-                            <td><a href="{{ row.TradingView_Link }}" target="_blank">View</a></td>
-                            <td>{{ row.Days_Since_Breakout }}</td>
-                            <td>{{ row.Pct_Above_50MA }}</td>
-                            <td>{{ row.Breakout }}</td>
-                            <td>{{ row.Score }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p class="text-center">No results available.</p>
-        {% endif %}
-    </div>
+  {% if data %}
+  <div class="stats">
+    <div class="stat"><b id="statTotal">–</b><span>Stocks screened</span></div>
+    <div class="stat"><b id="statBreakouts">–</b><span>Active breakouts</span></div>
+    <div class="stat"><b id="statScore">–</b><span>Average score</span></div>
+  </div>
+
+  <div class="tools">
+    <input id="filter" type="search" placeholder="Search ticker or sector" aria-label="Search ticker or sector">
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="table-wrap">
+    <table id="results">
+      <thead>
+        <tr>
+          <th data-type="text">Ticker</th>
+          <th data-type="text">Sector</th>
+          <th data-nosort style="cursor:default">Chart</th>
+          <th class="num" data-type="num">Days since breakout</th>
+          <th class="num" data-type="num">% above 50MA</th>
+          <th data-type="text">Breakout</th>
+          <th class="num" data-type="num">Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data %}
+        <tr>
+          <td class="ticker">{{ row.Ticker }}</td>
+          <td class="sector">{{ row.Sector }}</td>
+          <td><a class="view" href="{{ row.TradingView_Link }}" target="_blank" rel="noopener">TradingView</a></td>
+          <td class="num">{{ row.Days_Since_Breakout }}</td>
+          <td class="num">{{ row.Pct_Above_50MA }}</td>
+          <td><span class="pill {% if row.Breakout in [True, 'True', 'true', 'Yes', 'yes'] %}yes{% endif %}">{{ row.Breakout }}</span></td>
+          <td class="num score"><span class="bar"><i></i></span><span class="val">{{ row.Score }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="table-wrap"><div class="empty"><b>No results yet</b>Run the screener, then reload this page.</div></div>
+  {% endif %}
+</div>
+
+<script>
+(function () {
+  var table = document.getElementById('results');
+  if (!table) return;
+  var tbody = table.tBodies[0];
+  var rows = Array.prototype.slice.call(tbody.rows);
+  var num = function (s) { var n = parseFloat(String(s).replace(/[^0-9.\-]/g, '')); return isNaN(n) ? -Infinity : n; };
+
+  // Score bars and summary stats
+  var scores = rows.map(function (r) { return num(r.querySelector('.val').textContent); });
+  var max = Math.max.apply(null, scores.filter(isFinite).concat([1]));
+  rows.forEach(function (r, i) {
+    r.querySelector('.bar i').style.width = Math.max(0, scores[i] / max * 100) + '%';
+  });
+  var valid = scores.filter(isFinite);
+  document.getElementById('statTotal').textContent = rows.length;
+  document.getElementById('statBreakouts').textContent = tbody.querySelectorAll('.pill.yes').length;
+  document.getElementById('statScore').textContent = valid.length
+    ? (valid.reduce(function (a, b) { return a + b; }, 0) / valid.length).toFixed(1) : '–';
+
+  // Search
+  var count = document.getElementById('count');
+  function applyFilter() {
+    var q = document.getElementById('filter').value.toLowerCase(), shown = 0;
+    rows.forEach(function (r) {
+      var hit = r.cells[0].textContent.toLowerCase().indexOf(q) > -1 || r.cells[1].textContent.toLowerCase().indexOf(q) > -1;
+      r.style.display = hit ? '' : 'none';
+      if (hit) shown++;
+    });
+    count.textContent = 'Showing ' + shown + ' of ' + rows.length;
+  }
+  document.getElementById('filter').addEventListener('input', applyFilter);
+  applyFilter();
+
+  // Sorting
+  var ths = table.tHead.rows[0].cells;
+  Array.prototype.forEach.call(ths, function (th, idx) {
+    if (th.hasAttribute('data-nosort')) return;
+    th.addEventListener('click', function () {
+      var asc = th.getAttribute('aria-sort') !== 'ascending';
+      Array.prototype.forEach.call(ths, function (t) { t.removeAttribute('aria-sort'); });
+      th.setAttribute('aria-sort', asc ? 'ascending' : 'descending');
+      var isNum = th.getAttribute('data-type') === 'num';
+      rows.sort(function (a, b) {
+        var x = a.cells[idx].textContent.trim(), y = b.cells[idx].textContent.trim();
+        var r = isNum ? num(x) - num(y) : x.localeCompare(y);
+        return asc ? r : -r;
+      });
+      rows.forEach(function (r) { tbody.appendChild(r); });
+    });
+  });
+})();
+</script>
 </body>
 </html>

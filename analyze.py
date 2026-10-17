@@ -75,12 +75,12 @@ def analyze(ticker, sector):
 
     # Combine all breakout conditions
     historical_data['Breakout'] &= historical_data['Mansfield_RSI_Higher'] & historical_data['Above_Recent_High']
-    historical_data['Breakout Date'] = historical_data.index.where(historical_data['Breakout'])
-    historical_data['Breakout Date'] = pd.to_datetime(historical_data['Date'])
-    current_date = datetime.now(pytz.timezone("America/New_York"))
-    historical_data['Days_Since_Breakout'] = (current_date - historical_data['Breakout Date']).dt.days
-    historical_data['Days_Since_Breakout'] = historical_data['Days_Since_Breakout'].fillna(0).astype(int)
-
+    historical_data['Breakout Date'] = pd.to_datetime(
+    historical_data['Date']).dt.tz_localize(None)
+    current_date = pd.Timestamp.now().normalize().tz_localize(None)
+    historical_data['Days_Since_Breakout'] = (
+        current_date - historical_data['Breakout Date']
+    ).dt.days
     # Filter for breakouts that happened in the last 5 days
     breakouts = historical_data[(historical_data['Breakout']) & (historical_data['Days_Since_Breakout'] <= 5)].copy()
 
